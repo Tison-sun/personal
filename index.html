@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIO Life | 16周体脂重塑专项计划</title>
+    <style>
+        :root {
+            --nio-blue: #FF6B00; 
+            --nio-mint: #FFB347; 
+            --nio-dark-blue: #2D3436; 
+            --nio-grey: #FFF9F5; 
+            --nio-text: #2D3436;
+            --nio-subtext: #636E72;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--white);
+            color: var(--nio-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 核心灵动反馈样式 - 应用于外层容器 */
+        .stat-item, .swiper-outer, .diet-row, .notice-box {
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: pointer;
+            will-change: transform;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .stat-item:active, .swiper-outer:active, .diet-row:active, .notice-box:active {
+            transform: scale(0.97);
+        }
+
+        /* Emoji 弹出动效 */
+        .emoji-pop {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+            z-index: 9999;
+            animation: floatUp 0.8s ease-out forwards;
+            user-select: none;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translate(-50%, -50%) scale(0.5) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -120px) scale(1.5) rotate(15deg); opacity: 0; }
+        }
+
+        header {
+            padding: 60px 24px 25px;
+            background: linear-gradient(180deg, #FFF0E5 0%, #FFFFFF 100%);
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--nio-blue);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 26px;
+            font-weight: 600;
+            margin: 0;
+            background: linear-gradient(90deg, var(--nio-dark-blue), var(--nio-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 24px;
+        }
+
+        .stat-item {
+            background-color: var(--nio-grey);
+            padding: 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--nio-subtext);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--nio-dark-blue);
+        }
+
+        section {
+            padding: 0 24px 40px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 35px 0 15px;
+            padding-bottom: 8px;
+            color: var(--nio-dark-blue);
+            border-bottom: 1px solid #FFE6D5;
+        }
+
+        .swiper-outer {
+            position: relative;
+            width: 100%;
+            margin-bottom: 16px;
+            border-radius: 20px; /* 确保缩放时边缘圆润 */
+        }
+
+        .swiper-container {
+            width: 100%;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            scrollbar-width: none;
+            border-radius: 20px;
+        }
+
+        .swiper-container::-webkit-scrollbar { display: none; }
+
+        .card-wrapper { display: flex; width: 200%; }
+
+        .card {
+            width: 100%;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            background-color: var(--nio-grey);
+            box-sizing: border-box;
+            padding: 24px 24px 40px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-day {
+            font-size: 11px;
+            color: var(--nio-blue);
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--nio-dark-blue);
+        }
+
+        .card-content, .guide-text {
+            font-size: 13px;
+            color: #5D6366;
+            line-height: 1.7;
+        }
+
+        .guide-text b { color: var(--nio-blue); }
+
+        .pagination-fixed {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background-color: #EBD9CE; transition: all 0.3s ease;
+        }
+
+        .dot.active { background-color: var(--nio-blue); width: 12px; border-radius: 4px; }
+
+        .diet-row {
+            display: flex; padding: 15px 12px; margin: 0 -12px;
+            border-radius: 12px; border-bottom: 1px solid #FDF2EB;
+        }
+
+        .diet-row:active { background-color: #FFF5EE; }
+
+        .diet-label { width: 60px; font-size: 13px; font-weight: 700; color: var(--nio-blue); }
+
+        .diet-desc { flex: 1; font-size: 13px; color: var(--nio-text); }
+
+        .notice-box {
+            background: linear-gradient(135deg, var(--nio-dark-blue), #434C4E);
+            color: var(--white); padding: 24px; border-radius: 20px; margin-top: 40px;
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.1);
+        }
+
+        .notice-title { font-size: 14px; font-weight: 700; color: var(--nio-mint); margin-bottom: 12px; }
+
+        .footer { padding: 50px 24px; text-align: center; font-size: 10px; color: #BDC3C7; letter-spacing: 3px; }
+
+        .highlight-blue { color: var(--nio-blue); font-weight: 600; }
+    </style>
+</head>
+<body onclick="popEmoji(event)">
+
+<header>
+    <div class="brand-logo">程锜的</div>
+    <h1 class="hero-title">16周体脂重塑计划 ⚡️</h1>
+</header>
+
+<div class="stats-container">
+    <div class="stat-item"><span class="stat-label">当前体重 ⚖️</span><span class="stat-value">96 KG</span></div>
+    <div class="stat-item"><span class="stat-label">目标体脂 🎯</span><span class="stat-value">25%</span></div>
+    <div class="stat-item"><span class="stat-label">燃脂心率 🔥</span><span class="stat-value">140-155 BPM</span></div>
+    <div class="stat-item"><span class="stat-label">训练时长 ⌚</span><span class="stat-value">30 MINS</span></div>
+</div>
+
+<section>
+    <h2>每周训练日程 📅</h2>
+    
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周一</div>
+                    <div class="card-title">全身燃脂 HIIT 🚀</div>
+                    <div class="card-content">开合跳 45s + 跪姿俯卧撑 15次 + 登山者 45s + 深蹲跳 12次<br><span class="highlight-blue">循环 4 组。核心收紧，静音着地。✨</span></div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周一：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>开合跳：</b>双脚跳开时呼气，合拢时吸气。必须前脚掌先着地，脚后跟尽量不触地，膝盖始终保持微屈弹性。<br>
+                        • <b>跪姿俯卧撑：</b>从头到膝盖呈直线。下落时吸气，胸部靠近地面；推起时呼气，撑起全身。<br>
+                        • <b>登山者：</b>保持臀部高度不高于肩部。交替提膝时，脚尖轻点地面，利用腹肌而非双腿惯性发力。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周二</div>
+                    <div class="card-title">下肢与核心强化 🦵</div>
+                    <div class="card-content">靠墙静蹲 60s + 慢速深蹲 20次 + 臀桥 20次 + 平板支撑 60s<br><span class="highlight-blue">循环 4 组。感受肌肉发力的秩序感。🧱</span></div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周二：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>靠墙静蹲：</b>背部平贴，大腿平行地面（呈90度）。双手不准扶膝盖，专注大腿前侧的灼烧感。<br>
+                        • <b>慢速深蹲：</b>脚距略宽于肩，脚尖外展。下蹲时重心在足跟，臀部后坐，膝盖切勿超过脚尖。<br>
+                        • <b>平板支撑：</b>肘部垂直于肩部。想象肚脐眼向脊柱贴近，臀部收紧，严禁塌腰以免腰椎受压。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周三</div>
+                    <div class="card-title">主动恢复 / 低强度 🌊</div>
+                    <div class="card-content">超慢跑（垫上）30分钟 + 全身拉伸。<br><span class="highlight-blue">保持平稳呼吸，修复肌肉纤维。🍃</span></div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周三：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>超慢跑：</b>不追求步幅，原地小碎步式点地，保持呼吸节奏均匀，心率维持在130次/分以下。<br>
+                        • <b>拉伸：</b>每个拉伸动作保持30秒，深呼吸。重点拉伸大腿前侧（股四头肌）和腹肌，动作缓慢严禁猛力回弹。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周四</div>
+                    <div class="card-title">全身燃脂 HIIT (进阶) ⚡</div>
+                    <div class="card-content">简化版波比跳 12次 + 侧步拉伸 45s + 仰卧交替单车 20次 + 开合跳 45s<br><span class="highlight-blue">循环 4 组。提升代谢水平。📈</span></div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周四：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>简化波比：</b>省去胸部贴地和最高点跳跃。双手撑地后，双腿交替向后跨（不跳）以减少对膝关节的冲击。<br>
+                        • <b>仰卧单车：</b>下背部紧贴地面。转动上半身用肘碰对侧膝盖，感受侧腹的“拧干”感，严禁手抱头生拉脖子。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周五</div>
+                    <div class="card-title">上肢与核心强化 💪</div>
+                    <div class="card-content">跪姿俯卧撑 15次 + 支撑摸肩 20次 + 卷腹 20次 + 平板支撑 60s<br><span class="highlight-blue">循环 4 组。塑造上肢线条。</span></div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周五：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>支撑摸肩：</b>平板支撑姿势，单手交替摸对侧肩膀。核心必须锁死，骨盆严禁左右大幅晃动。<br>
+                        • <b>卷腹：</b>背部中段以下不离开地面。吐气时用力收缩腹部将肩胛骨抬起，感受上腹肌的挤压感。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周六</div>
+                    <div class="card-title">挑战日：高效燃脂 🏆</div>
+                    <div class="card-content">循环 5 组：深蹲跳 10次 + 登山者 30s + 开合跳 30s。<br><span class="highlight-blue">组间休 30s。挑战心率巅峰。</span></div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周六：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>深蹲跳（96kg注意）：</b>起跳不需要高，关键是落地。落地时迅速转为深蹲，用肌肉“吸入”冲击音。<br>
+                        • <b>综合挑战：</b>这组动作是为了短时间推高心率。如果感到膝盖不适，请将跳跃改为无跳跃的快速深蹲。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="swiper-outer">
+        <div class="swiper-container" onscroll="updateDots(this)">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-day">周日</div>
+                    <div class="card-title">纯休息 / 轻量拉伸 🧘‍♂️</div>
+                    <div class="card-content">彻底放松肌肉。为下周的进步积蓄能量。</div>
+                </div>
+                <div class="card guide-side">
+                    <div class="card-day">周日：动作要领 💡</div>
+                    <div class="guide-text">
+                        • <b>完全恢复：</b>今天严禁大重量训练。建议进行简单的泡沫轴滚动，放松这一周紧绷的肌肉筋膜。<br>
+                        • <b>心理复盘：</b>回顾本周哪一天的动作做起来最困难，下周一可以重点关注该动作的力量感提升。
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pagination-fixed"><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <h2>4个月冲刺饮食 🥗</h2>
+    <div class="diet-row"><div class="diet-label">早餐 🍳</div><div class="diet-desc">无糖燕麦片(40g) + 2个水煮蛋(去1黄) + 250ml 无糖豆浆</div></div>
+    <div class="diet-row"><div class="diet-label">午餐 🍱</div><div class="diet-desc">糙米饭(150g) + 清炒时蔬(大量) + 鸡胸/鱼肉(200g)</div></div>
+    <div class="diet-row"><div class="diet-label">晚餐 🌽</div><div class="diet-desc">蒸玉米/紫薯(100g) + 白灼时蔬 + 虾仁/瘦牛肉(150g)</div></div>
+
+    <div class="notice-box">
+        <div class="notice-title">💡 Tips</div>
+        <div style="font-size: 13px; opacity: 0.9; line-height: 1.8;">
+            • <b>补水：</b> 即使不渴也要喝水，每日 3L 💧<br>
+            • <b>睡眠：</b> 23:30 前入睡，保证生长激素分泌 🌙
+        </div>
+    </div>
+</section>
+
+<div class="footer">BLUE SKY COMING ☁️</div>
+
+<script>
+    function updateDots(el) {
+        const scrollLeft = el.scrollLeft;
+        const width = el.offsetWidth;
+        const dots = el.parentElement.querySelectorAll('.dot');
+        if (scrollLeft > width / 2) {
+            dots[0].classList.remove('active'); dots[1].classList.add('active');
+        } else {
+            dots[0].classList.add('active'); dots[1].classList.remove('active');
+        }
+    }
+
+    function popEmoji(e) {
+        const emojis = ['⚡️', '🔥', '💪', '✨', '🚀', '🏃', '🥗', '🎯', '🥑', '🔋'];
+        const emoji = document.createElement('div');
+        emoji.className = 'emoji-pop';
+        emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        const x = e.clientX || (e.touches && e.touches[0].clientX);
+        const y = e.clientY || (e.touches && e.touches[0].clientY);
+        emoji.style.left = x + 'px';
+        emoji.style.top = y + 'px';
+        document.body.appendChild(emoji);
+        setTimeout(() => { emoji.remove(); }, 800);
+    }
+</script>
+
+</body>
+</html>
+
