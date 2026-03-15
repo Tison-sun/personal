@@ -36,6 +36,20 @@
             z-index: -1; line-height: 1;
         }
 
+        /* 打招呼和日期样式 - 调整了间距使其在标题下方更美观 */
+        .greeting-area {
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+        .greeting-area span {
+            font-weight: 800;
+            color: var(--nio-orange);
+            margin-left: 5px;
+        }
+
         /* 底部导航 */
         .bottom-nav {
             position: fixed; bottom: 30px; left: 50%;
@@ -113,12 +127,11 @@
             padding: 20px 15px 80px; box-sizing: border-box;
         }
 
-        /* 核心修改：固定高度且去掉 ::after 数字 */
         .card {
             background: white; border-radius: var(--ios-radius);
             padding: 40px; box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.15);
             position: relative; 
-            height: 480px; /* 统一所有卡片高度 */
+            height: 480px; 
             display: flex; flex-direction: column; overflow: hidden;
         }
 
@@ -172,6 +185,7 @@
 <header>
     <div class="brand-tag">RESET & LAB</div>
     <h1 class="hero-title">16-WEEK<br><span>BODY REBUILD</span></h1>
+    <div class="greeting-area" id="greeting-text">正在同步时间...</div>
 </header>
 
 <div class="stats-grid">
@@ -332,6 +346,30 @@
 </nav>
 
 <script>
+    function updateGreeting() {
+        const greetingElement = document.getElementById('greeting-text');
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const beijingTime = new Date(utc + (3600000 * 8));
+        
+        const hours = beijingTime.getHours();
+        const month = beijingTime.getMonth() + 1;
+        const date = beijingTime.getDate();
+        
+        let greeting = "";
+        if (hours >= 5 && hours < 12) {
+            greeting = "早上好呀！";
+        } else if (hours >= 12 && hours < 18) {
+            greeting = "下午好呀！";
+        } else {
+            greeting = "晚上好呀！";
+        }
+        
+        greetingElement.innerHTML = `<span>${greeting}</span> 今天是 ${month}月${date}日`;
+    }
+    
+    updateGreeting();
+
     let timerInterval;
     let seconds = 0;
     let isRunning = false;
