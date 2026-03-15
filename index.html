@@ -34,26 +34,22 @@
                 --notice-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 45px rgba(128, 54, 0, 0.15);
                 color-scheme: dark;
             }
-@media (prefers-color-scheme: dark) {
-    /* ... 保持其他 root 变量不变 ... */
-
-    .notice-box {
-        /* 使用实色深灰，不再透明，彻底遮盖底层颜色 */
-        background: #1C1C1E !important; 
-        /* 给一个非常细微的深色边框，增加细节 */
-        border: 1px solid #2C2C2E !important;
-        /* 文字改用橙色，作为点睛之笔 */
-        color: var(--nio-orange) !important;
-        /* 这里的投影要调暗，避免在深色背景下显得虚假 */
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+.notice-box {
+        /* 使用深暗橙色实色，不再透明，不显脏 */
+        background: #803600 !important; 
+        /* 边框使用稍微亮一点点橙色，勾勒出质感 */
+        border: 1px solid #A64600 !important;
+        /* 文字使用纯白，确保在深色底上清晰 */
+        color: #FFFFFF !important;
+        /* 投影改用黑色，增加厚重感 */
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* 确保内部的小标题和文字也有层次 */
+    /* 内部文字保持纯白，增加可读性 */
     .notice-box div {
-        color: #FFFFFF !important; /* 标题用纯白 */
-        opacity: 0.9;
+        color: #FFFFFF !important;
+        opacity: 1; /* 确保不透明 */
     }
-}
 
 
         }
