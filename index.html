@@ -22,23 +22,26 @@
             font-family: 'PingFang SC', -apple-system, sans-serif;
             margin: 0; padding: 0;
             background-color: var(--soft-white);
+            /* 核心修改：从顶部 5% 浓度的橙色慢慢过渡到白色 */
+            /*background: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, #FFFFFF 100%);
+            background-attachment: fixed; /* 锁定背景，不随内容滚动而消失 */
             color: var(--deep-black);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
         /* 杂志级底纹 */
-        body::before {
+        /*body::before {
             content: "16";
-            position: fixed; top: -10px; right: -30px;
-            font-size: 280px; font-weight: 900;
+            position: fixed; top: -60px; right: -50px;
+            font-size: 380px; font-weight: 900;
             color: rgba(255, 107, 0, 0.04);
             z-index: -1; line-height: 1;
         }
 
         /* 打招呼和日期样式 - 调整了间距使其在标题下方更美观 */
         .greeting-area {
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 14px;
             font-weight: 500;
             color: #888;
@@ -365,7 +368,7 @@
             greeting = "晚上好呀！";
         }
         
-        greetingElement.innerHTML = `<span>${greeting}</span> 今天是 ${month}月${date}日`;
+        greetingElement.innerHTML = `<span>${greeting}</span>今天是 ${month}月${date}日`;
     }
     
     updateGreeting();
