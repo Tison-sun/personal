@@ -128,7 +128,7 @@
             padding: 4px 14px; border-radius: 50px; font-size: 10px;
             font-weight: 800; letter-spacing: 2px; margin-bottom: 12px;
         }
-        .hero-title { font-size: 42px; font-weight: 900; margin: 0; line-height: 1; letter-spacing: -2px; }
+        .hero-title { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 42px; font-weight: 900; margin: 0; line-height: 1; letter-spacing: -2px; }
         .hero-title span { color: var(--nio-orange); }
 
         .stats-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 30px; margin-top: 25px; }
@@ -391,6 +391,10 @@
         const month = beijingTime.getMonth() + 1;
         const date = beijingTime.getDate();
         
+        // 新增：获取周几并渲染
+        const weekDays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        const dayOfWeek = weekDays[beijingTime.getDay()];
+        
         let greeting = "";
         if (hours >= 5 && hours < 12) {
             greeting = "早上好呀！";
@@ -400,7 +404,19 @@
             greeting = "晚上好呀！";
         }
         
-        greetingElement.innerHTML = `<span>${greeting}</span>今天是 ${month}月${date}日`;
+        // 修改：日期后增加周几
+        greetingElement.innerHTML = `<span>${greeting}</span>今天是 ${month}月${date}日 ${dayOfWeek}`;
+
+        // 新增：自动跳转逻辑
+        // beijingTime.getDay() 返回 0-6 (周日-周六)
+        // 你的 Tab 索引是 0:周一, 1:周二 ... 6:周日
+        let todayIndex = beijingTime.getDay();
+        let targetTabIndex = todayIndex === 0 ? 6 : todayIndex - 1;
+        
+        // 延迟一小会儿执行，确保 swiper 容器宽度计算正确
+        setTimeout(() => {
+            scrollToDay(targetTabIndex);
+        }, 100);
     }
     
     updateGreeting();
@@ -437,8 +453,10 @@
     function scrollToDay(index) {
         const wrappers = swiper.querySelectorAll('.card-wrapper');
         const target = wrappers[index];
-        swiper.scrollTo({ left: target.offsetLeft - 10, behavior: 'smooth' });
-        updateTabStyle(index);
+        if(target) {
+            swiper.scrollTo({ left: target.offsetLeft - 10, behavior: 'smooth' });
+            updateTabStyle(index);
+        }
     }
 
     function updateTabStyle(index) {
