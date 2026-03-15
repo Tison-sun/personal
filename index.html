@@ -19,19 +19,15 @@
             --card-bg: #FFFFFF;
             --text-main: var(--deep-black);
             --bg-gradient: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, #FFFFFF 100%);
-            /* PRO TIPS 卡片在浅色模式下的阴影 */
             --notice-shadow: 0 25px 50px rgba(255, 107, 0, 0.35);
         }
 
-        /* 核心修改：暗色模式适配方案 */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #000000;
-                --card-bg: #1C1C1E; /* 略微拉开背景层次 */
+                --card-bg: #1C1C1E;
                 --text-main: #FFFFFF;
-                /* 径向渐变，解决“白白”的问题，增加深邃感 */
                 --bg-gradient: radial-gradient(circle at top, rgba(255, 107, 0, 0.15) 0%, #000000 45%);
-                /* PRO TIPS 卡片在深色模式下的和谐阴影：深色浮起感 + 极淡暗橙光晕 */
                 --notice-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 45px rgba(128, 54, 0, 0.15);
             }
         }
@@ -122,7 +118,11 @@
             color: white; font-size: 10px; flex-shrink: 0;
         }
 
-        header { padding: 80px 30px 20px; display: flex; flex-direction: column; align-items: flex-start; }
+        /* 修改：优化状态栏顶部的间距适配 */
+        header { 
+            padding: calc(env(safe-area-inset-top) + 40px) 30px 20px; 
+            display: flex; flex-direction: column; align-items: flex-start; 
+        }
         .brand-tag {
             background: var(--nio-orange); color: white;
             padding: 4px 14px; border-radius: 50px; font-size: 10px;
@@ -144,7 +144,6 @@
 
         .swiper-outer { width: 100%; overflow: visible; margin: 30px 0; }
         
-        /* 优化：Grid 布局实现卡片等高 */
         .swiper-container {
             display: grid;
             grid-auto-flow: column;
@@ -183,7 +182,7 @@
         .highlight { color: var(--nio-orange); font-weight: 800; border-bottom: 2px solid rgba(255,107,0,0.1); }
 
         .guide-box {
-            margin-top: auto; /* 关键：确保底部内容在等高卡片中对齐底部 */
+            margin-top: auto; 
             padding-top: 25px;
             border-top: 1px solid rgba(128,128,128,0.1); font-size: 14px; color: #888;
             line-height: 1.8; z-index: 1;
@@ -195,13 +194,12 @@
             border-radius: 50px 50px 0 0; color: white;
         }
         
-        /* 优化：去除生硬的左描边，增加微小的内边距和背景呼吸感 */
         .diet-card {
             background: rgba(255, 255, 255, 0.05); 
             padding: 24px; 
             border-radius: 28px;
             margin-bottom: 16px; 
-            border: 1px solid rgba(255, 255, 255, 0.03); /* 使用极淡的描边代替粗色块 */
+            border: 1px solid rgba(255, 255, 255, 0.03); 
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -234,7 +232,6 @@
             box-shadow: var(--notice-shadow);
             position: relative; 
             z-index: 10;
-            /* 关键：确保 notice-box 的 transition 不被覆盖，且包含 transform 和 box-shadow */
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
                 box-shadow 0.3s ease, 
                 background 0.3s ease;
@@ -389,17 +386,14 @@
 
     <div class="diet-section">
         <h2 style="font-size: 32px; margin-bottom: 30px; font-weight: 900; letter-spacing: -1px;">NUTRITION 🥗</h2>
-        
         <div class="diet-card interactive-card">
             <span class="diet-tag">BREAKFAST 🍳</span>
             <div class="diet-content">无糖燕麦片(40g) + 2个水煮蛋(去1黄) + 250ml 无糖豆浆</div>
         </div>
-        
         <div class="diet-card interactive-card">
             <span class="diet-tag">LUNCH 🍱</span>
             <div class="diet-content">糙米饭(150g) + 清炒时蔬(大量) + 鸡胸/鱼肉(200g)</div>
         </div>
-        
         <div class="diet-card interactive-card">
             <span class="diet-tag">DINNER 🌽</span>
             <div class="diet-content">蒸玉米/紫薯(100g) + 白灼时蔬 + 虾仁/瘦牛肉(150g)</div>
@@ -428,6 +422,19 @@
 </nav>
 
 <script>
+    // 核心变色龙脚本：同步状态栏
+    function syncStatusbarColor() {
+        let themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (!themeMeta) {
+            themeMeta = document.createElement('meta');
+            themeMeta.name = "theme-color";
+            document.head.appendChild(themeMeta);
+        }
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // 浅色模式使用背景灰 #F5F5F7，深色模式使用纯黑 #000000
+        themeMeta.setAttribute('content', isDark ? '#000000' : '#F5F5F7');
+    }
+
     function updateGreeting() {
         const greetingElement = document.getElementById('greeting-text');
         const now = new Date();
@@ -437,30 +444,26 @@
         const hours = beijingTime.getHours();
         const month = beijingTime.getMonth() + 1;
         const date = beijingTime.getDate();
-        
         const weekDays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
         const dayOfWeek = weekDays[beijingTime.getDay()];
         
         let greeting = "";
-        if (hours >= 5 && hours < 12) {
-            greeting = "早上好呀！";
-        } else if (hours >= 12 && hours < 18) {
-            greeting = "下午好呀！";
-        } else {
-            greeting = "晚上好呀！";
-        }
+        if (hours >= 5 && hours < 12) { greeting = "早上好呀！"; } 
+        else if (hours >= 12 && hours < 18) { greeting = "下午好呀！"; } 
+        else { greeting = "晚上好呀！"; }
         
         greetingElement.innerHTML = `<span>${greeting}</span>今天是 ${month}月${date}日 ${dayOfWeek}`;
 
         let todayIndex = beijingTime.getDay();
         let targetTabIndex = todayIndex === 0 ? 6 : todayIndex - 1;
         
-        setTimeout(() => {
-            scrollToDay(targetTabIndex);
-        }, 100);
+        setTimeout(() => { scrollToDay(targetTabIndex); }, 100);
     }
     
+    // 初始化
+    syncStatusbarColor();
     updateGreeting();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncStatusbarColor);
 
     let timerInterval;
     let seconds = 0;
@@ -470,7 +473,6 @@
         e.stopPropagation();
         const display = document.getElementById('timer-display');
         const icon = document.getElementById('timer-icon');
-        
         if (isRunning) {
             clearInterval(timerInterval);
             icon.innerText = '▶';
