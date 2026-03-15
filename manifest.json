@@ -1,0 +1,15 @@
+{
+  "name": "RESET & LAB 训练计划",
+  "short_name": "RESET & LAB",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#FF6B00",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/8421/8421444.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
