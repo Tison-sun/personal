@@ -444,7 +444,6 @@
 </nav>
 
 <script>
-    // 4. 增强版变色龙脚本：同时修正顶部和底部系统色调
     function syncStatusbarColor() {
         let themeMeta = document.querySelector('meta[name="theme-color"]');
         if (!themeMeta) {
@@ -453,10 +452,8 @@
             document.head.appendChild(themeMeta);
         }
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        // 关键：在安卓上，#000000 配合 viewport-fit=cover 能实现最彻底的透明效果
-        // 浅色模式保持 #F5F5F7 确保与背景融合
-        themeMeta.setAttribute('content', isDark ? '#000000' : '#F5F5F7');
+        // 在深色模式下，设置为 #121212 以匹配 ColorOS 的深色背景感
+        themeMeta.setAttribute('content', isDark ? '#121212' : '#F5F5F7');
     }
 
     function updateGreeting() {
@@ -482,17 +479,6 @@
         let targetTabIndex = todayIndex === 0 ? 6 : todayIndex - 1;
         
         setTimeout(() => { scrollToDay(targetTabIndex); }, 100);
-        // 监听 App 从后台切回前台的动作
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                // 强制执行一次颜色同步
-                syncStatusbarColor();
-                // 针对安卓 Chrome 的 Bug：微调一下 body 的 padding 触发重绘
-                document.body.style.display = 'none';
-                document.body.offsetHeight; // 触发 reflow
-                document.body.style.display = 'block';
-    }
-});
     }
     
     // 初始化
@@ -557,6 +543,17 @@
         document.body.appendChild(emoji);
         setTimeout(() => emoji.remove(), 800);
     }
+
+    // 监听 App 从后台切回前台的动作，解决 PWA 切换模式后的白屏挂起问题
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            syncStatusbarColor();
+            // 强制触发 reflow，踢开渲染假死
+            document.body.style.display = 'none';
+            document.body.offsetHeight; 
+            document.body.style.display = 'block';
+        }
+    });
 </script>
 
 </body>
