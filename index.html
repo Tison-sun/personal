@@ -428,24 +428,6 @@
 </nav>
 
 <script>
-        // 动态适配安卓状态栏颜色
-    function adjustThemeColor() {
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            // 深色模式：背景是深色
-            metaThemeColor.setAttribute('content', '#121212');
-        } else {
-            // 浅色模式：背景是淡灰色或白色
-            metaThemeColor.setAttribute('content', '#F5F5F7'); 
-        }
-    }
-    
-    // 初始化执行
-    adjustThemeColor();
-    
-    // 监听系统模式实时切换（用户在控制中心切换时立即生效）
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', adjustThemeColor);
-    
     function updateGreeting() {
         const greetingElement = document.getElementById('greeting-text');
         const now = new Date();
