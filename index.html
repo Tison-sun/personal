@@ -123,15 +123,32 @@
 
         /* 修改：优化状态栏顶部的间距适配 */
         header { 
-            margin-top: -1px;
-            padding-top: calc(env(safe-area-inset-top) + 41px); /* 补偿那 1px */
+            /* 1. 增加 padding-top 确保内容避开状态栏 */
             padding: calc(env(safe-area-inset-top) + 40px) 30px 20px; 
-            display: flex; flex-direction: column; align-items: flex-start; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            
+            /* 2. 核心修复：给 header 一个微小的负 margin 并用 padding 补回 */
+            /* 这样可以强制 header 的背景色向上“溢出”一点点，填满可能存在的像素缝隙 */
+            margin-top: -2px;
+            padding-top: calc(env(safe-area-inset-top) + 42px);
+            
+            /* 3. 确保背景裁剪不会切断这部分微调 */
+            background-clip: padding-box;
         }
         .brand-tag {
-            background: var(--nio-orange); color: white;
-            padding: 4px 14px; border-radius: 50px; font-size: 10px;
-            font-weight: 800; letter-spacing: 2px; margin-bottom: 12px;
+            background: var(--nio-orange); 
+            color: white;
+            padding: 4px 14px; 
+            border-radius: 50px; 
+            font-size: 10px;
+            font-weight: 800; 
+            letter-spacing: 2px; 
+            margin-bottom: 12px;
+            /* 4. 消除可能导致溢色的外描边 */
+            border: none;
+            box-shadow: none;
         }
         .hero-title { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 42px; font-weight: 900; margin: 0; line-height: 1; letter-spacing: -2px; }
         .hero-title span { color: var(--nio-orange); }
