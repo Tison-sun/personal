@@ -41,6 +41,9 @@
         body {
             font-family: 'PingFang SC', -apple-system, sans-serif;
             margin: 0; padding: 0;
+            /* 确保背景颜色是纯净的，不留缝隙 */
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
             background-color: var(--bg-color);
             background-image: var(--bg-gradient);
             background-attachment: fixed;
@@ -120,6 +123,8 @@
 
         /* 修改：优化状态栏顶部的间距适配 */
         header { 
+            margin-top: -1px;
+            padding-top: calc(env(safe-area-inset-top) + 41px); /* 补偿那 1px */
             padding: calc(env(safe-area-inset-top) + 40px) 30px 20px; 
             display: flex; flex-direction: column; align-items: flex-start; 
         }
