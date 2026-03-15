@@ -482,6 +482,17 @@
         let targetTabIndex = todayIndex === 0 ? 6 : todayIndex - 1;
         
         setTimeout(() => { scrollToDay(targetTabIndex); }, 100);
+        // 监听 App 从后台切回前台的动作
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                // 强制执行一次颜色同步
+                syncStatusbarColor();
+                // 针对安卓 Chrome 的 Bug：微调一下 body 的 padding 触发重绘
+                document.body.style.display = 'none';
+                document.body.offsetHeight; // 触发 reflow
+                document.body.style.display = 'block';
+    }
+});
     }
     
     // 初始化
