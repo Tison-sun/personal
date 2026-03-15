@@ -10,6 +10,27 @@
             --deep-black: #121212;
             --soft-white: #F5F5F7;
             --ios-radius: 35px;
+            
+            /* 浅色模式变量 */
+            --bg-color: var(--soft-white);
+            --card-bg: #FFFFFF;
+            --text-main: var(--deep-black);
+            --bg-gradient: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, #FFFFFF 100%);
+            /* PRO TIPS 卡片在浅色模式下的阴影 */
+            --notice-shadow: 0 25px 50px rgba(255, 107, 0, 0.35);
+        }
+
+        /* 核心修改：暗色模式适配方案 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #000000;
+                --card-bg: #1C1C1E; /* 略微拉开背景层次 */
+                --text-main: #FFFFFF;
+                /* 径向渐变，解决“白白”的问题，增加深邃感 */
+                --bg-gradient: radial-gradient(circle at top, rgba(255, 107, 0, 0.15) 0%, #000000 45%);
+                /* PRO TIPS 卡片在深色模式下的和谐阴影：深色浮起感 + 极淡暗橙光晕 */
+                --notice-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 45px rgba(128, 54, 0, 0.15);
+            }
         }
 
         * {
@@ -21,25 +42,16 @@
         body {
             font-family: 'PingFang SC', -apple-system, sans-serif;
             margin: 0; padding: 0;
-            background-color: var(--soft-white);
-            /* 核心修改：从顶部 5% 浓度的橙色慢慢过渡到白色 */
-            /*background: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, #FFFFFF 100%);
-            background-attachment: fixed; /* 锁定背景，不随内容滚动而消失 */
-            color: var(--deep-black);
+            background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* 杂志级底纹 */
-        /*body::before {
-            content: "16";
-            position: fixed; top: -60px; right: -50px;
-            font-size: 380px; font-weight: 900;
-            color: rgba(255, 107, 0, 0.04);
-            z-index: -1; line-height: 1;
-        }
-
-        /* 打招呼和日期样式 - 调整了间距使其在标题下方更美观 */
+        /* 顶部区域样式保持不变，但在深色模式下自动适配文字颜色 */
         .greeting-area {
             margin-top: 10px;
             font-size: 14px;
@@ -53,7 +65,7 @@
             margin-left: 5px;
         }
 
-        /* 底部导航 */
+        /* 底部导航适配 */
         .bottom-nav {
             position: fixed; bottom: 30px; left: 50%;
             transform: translateX(-50%); z-index: 1005;
@@ -64,6 +76,12 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             border: 1px solid rgba(255,255,255,0.4);
         }
+        @media (prefers-color-scheme: dark) {
+            .bottom-nav {
+                background: rgba(28, 28, 30, 0.85);
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+        }
 
         .tab-item {
             flex: 1; text-align: center; font-size: 13px; font-weight: 800;
@@ -72,7 +90,7 @@
         }
         .tab-item.active { background: var(--nio-orange); color: white; transform: scale(1.1); }
 
-        /* 计时器 */
+        /* 计时器适配 */
         .timer-box {
             position: fixed; right: 20px; bottom: 105px;
             z-index: 1001;
@@ -89,6 +107,12 @@
             font-variant-numeric: tabular-nums;
             -webkit-font-feature-settings: "tnum";
             font-feature-settings: "tnum";
+        }
+        @media (prefers-color-scheme: dark) {
+            .timer-box {
+                background: rgba(28, 28, 30, 0.9);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
         }
         .timer-box:active { transform: scale(0.9); }
         
@@ -109,9 +133,10 @@
 
         .stats-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 30px; margin-top: 25px; }
         .stat-pill {
-            background: white; padding: 10px 18px; border-radius: 50px;
+            background: var(--card-bg); padding: 10px 18px; border-radius: 50px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);
             font-size: 12px; font-weight: 800;
+            color: var(--text-main);
         }
 
         .interactive-card { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
@@ -131,21 +156,22 @@
         }
 
         .card {
-            background: white; border-radius: var(--ios-radius);
+            background: var(--card-bg); border-radius: var(--ios-radius);
             padding: 40px; box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.15);
             position: relative; 
             height: 480px; 
             display: flex; flex-direction: column; overflow: hidden;
+            color: var(--text-main);
         }
 
         .card-day { font-size: 12px; font-weight: 900; color: var(--nio-orange); letter-spacing: 3px; margin-bottom: 15px; z-index: 1; }
-        .card-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: var(--deep-black); z-index: 1; }
-        .card-content { font-size: 15px; color: #333; line-height: 1.8; margin-bottom: 30px; z-index: 1; text-align: justify; }
+        .card-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; z-index: 1; }
+        .card-content { font-size: 15px; line-height: 1.8; margin-bottom: 30px; z-index: 1; text-align: justify; opacity: 0.9; }
         .highlight { color: var(--nio-orange); font-weight: 800; border-bottom: 2px solid rgba(255,107,0,0.1); }
 
         .guide-box {
             margin-top: auto; padding-top: 25px;
-            border-top: 1px solid #F8F8F8; font-size: 14px; color: #666;
+            border-top: 1px solid rgba(128,128,128,0.1); font-size: 14px; color: #888;
             line-height: 1.8; z-index: 1;
         }
         .guide-box b { color: var(--nio-orange); display: block; margin-bottom: 6px; }
@@ -160,15 +186,21 @@
         }
         .diet-tag { color: var(--nio-orange); font-size: 11px; font-weight: 900; margin-bottom: 8px; display: block; }
 
+        /* NOTICE BOX：核心保留橙色背景，动态切换阴影 */
         .notice-box {
-            background: var(--nio-orange); color: white; padding: 40px; border-radius: var(--ios-radius);
-            margin: -70px 30px 40px; box-shadow: 0 25px 50px rgba(255, 107, 0, 0.35);
+            background: var(--nio-orange); 
+            color: white; 
+            padding: 40px; 
+            border-radius: var(--ios-radius);
+            margin: -70px 30px 40px; 
+            box-shadow: var(--notice-shadow);
             position: relative; z-index: 10;
+            transition: box-shadow 0.3s ease;
         }
 
         .footer { 
             padding: 40px 0 160px; font-size: 10px; font-weight: 900; 
-            color: #CCC; letter-spacing: 5px; text-align: center; width: 100%;
+            color: #666; letter-spacing: 5px; text-align: center; width: 100%;
             text-transform: uppercase;
         }
 
