@@ -20,6 +20,9 @@
             --text-main: var(--deep-black);
             --bg-gradient: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, #FFFFFF 100%);
             --notice-shadow: 0 25px 50px rgba(255, 107, 0, 0.35);
+            
+            /* 2. 关键：强制系统级渲染管线色调 */
+            color-scheme: light dark;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -29,6 +32,7 @@
                 --text-main: #FFFFFF;
                 --bg-gradient: radial-gradient(circle at top, rgba(255, 107, 0, 0.15) 0%, #000000 45%);
                 --notice-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 45px rgba(128, 54, 0, 0.15);
+                color-scheme: dark;
             }
         }
 
@@ -38,12 +42,11 @@
             box-sizing: border-box;
         }
 
+        /* 3. 修改 body：确保背景色物理穿透到导航栏下方 */
         body {
             font-family: 'PingFang SC', -apple-system, sans-serif;
             margin: 0; padding: 0;
-            /* 确保背景颜色是纯净的，不留缝隙 */
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+            min-height: 100vh; /* 确保高度占满 */
             background-color: var(--bg-color);
             background-image: var(--bg-gradient);
             background-attachment: fixed;
@@ -51,6 +54,8 @@
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             transition: background 0.3s ease, color 0.3s ease;
+            /* 增加底部安全边距补白，防止露出底部容器底色 */
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .greeting-area {
@@ -67,7 +72,8 @@
         }
 
         .bottom-nav {
-            position: fixed; bottom: 30px; left: 50%;
+            position: fixed; bottom: calc(30px + env(safe-area-inset-bottom)); /* 适配手势条高度 */
+            left: 50%;
             transform: translateX(-50%); z-index: 1005;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -80,6 +86,8 @@
             .bottom-nav {
                 background: rgba(28, 28, 30, 0.85);
                 border: 1px solid rgba(255,255,255,0.1);
+                /* 深色模式下降低模糊可能带来的杂色 */
+                backdrop-filter: blur(15px);
             }
         }
 
@@ -91,7 +99,7 @@
         .tab-item.active { background: var(--nio-orange); color: white; transform: scale(1.1); }
 
         .timer-box {
-            position: fixed; right: 20px; bottom: 105px;
+            position: fixed; right: 20px; bottom: calc(105px + env(safe-area-inset-bottom));
             z-index: 1001;
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -121,20 +129,13 @@
             color: white; font-size: 10px; flex-shrink: 0;
         }
 
-        /* 修改：优化状态栏顶部的间距适配 */
         header { 
-            /* 1. 增加 padding-top 确保内容避开状态栏 */
             padding: calc(env(safe-area-inset-top) + 40px) 30px 20px; 
             display: flex; 
             flex-direction: column; 
             align-items: flex-start; 
-            
-            /* 2. 核心修复：给 header 一个微小的负 margin 并用 padding 补回 */
-            /* 这样可以强制 header 的背景色向上“溢出”一点点，填满可能存在的像素缝隙 */
             margin-top: -2px;
             padding-top: calc(env(safe-area-inset-top) + 42px);
-            
-            /* 3. 确保背景裁剪不会切断这部分微调 */
             background-clip: padding-box;
         }
         .brand-tag {
@@ -146,7 +147,6 @@
             font-weight: 800; 
             letter-spacing: 2px; 
             margin-bottom: 12px;
-            /* 4. 消除可能导致溢色的外描边 */
             border: none;
             box-shadow: none;
         }
@@ -444,7 +444,7 @@
 </nav>
 
 <script>
-    // 核心变色龙脚本：同步状态栏
+    // 4. 增强版变色龙脚本：同时修正顶部和底部系统色调
     function syncStatusbarColor() {
         let themeMeta = document.querySelector('meta[name="theme-color"]');
         if (!themeMeta) {
@@ -453,7 +453,9 @@
             document.head.appendChild(themeMeta);
         }
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        // 浅色模式使用背景灰 #F5F5F7，深色模式使用纯黑 #000000
+        
+        // 关键：在安卓上，#000000 配合 viewport-fit=cover 能实现最彻底的透明效果
+        // 浅色模式保持 #F5F5F7 确保与背景融合
         themeMeta.setAttribute('content', isDark ? '#000000' : '#F5F5F7');
     }
 
