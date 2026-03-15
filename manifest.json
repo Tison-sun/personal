@@ -1,15 +1,24 @@
 {
-  "name": "RESET & LAB 训练计划",
+  "name": "RESET & LAB 16W",
   "short_name": "RESET & LAB",
+  "description": "16周身体重塑计划",
   "start_url": "index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#121212",
   "theme_color": "#FF6B00",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/8421/8421444.png",
+      "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
