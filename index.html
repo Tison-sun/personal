@@ -42,18 +42,33 @@
             box-sizing: border-box;
         }
 
-        /* 3. 修改 body：确保背景色物理穿透到导航栏下方 */
+        /* 3. 修改 body：整合多光源径向渐变与物理穿透逻辑 */
         body {
             font-family: 'PingFang SC', -apple-system, sans-serif;
             margin: 0; padding: 0;
             min-height: 100vh; /* 确保高度占满 */
+            
+            /* 核心：基础底色 */
             background-color: var(--bg-color);
-            background-image: var(--bg-gradient);
+            
+            /* 背景逻辑组合：
+               1. 左上角注入微弱橙色光晕 (8% 不透明度)
+               2. 右下角注入极淡冷蓝光晕 (5% 不透明度)
+               3. 最后叠加你定义的变量渐变 (var(--bg-gradient))
+            */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 107, 0, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 122, 255, 0.05) 0px, transparent 50%),
+                var(--bg-gradient);
+                
             background-attachment: fixed;
             color: var(--text-main);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            transition: background 0.3s ease, color 0.3s ease;
+            
+            /* 将 transition 时间稍微拉长到 0.5s，让深浅模式切换时的光影流动更优雅 */
+            transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+            
             /* 增加底部安全边距补白，防止露出底部容器底色 */
             padding-bottom: env(safe-area-inset-bottom);
         }
