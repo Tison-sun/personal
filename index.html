@@ -602,7 +602,7 @@
     function triggerVibrate(ms) {
         const now = Date.now();
         // 强制 500ms 闸门，封死一切连击
-        if (now - lastVibrateTime < 500) return;
+        if (now - lastVibrateTime < 50) return;
         
         if (window.navigator.vibrate) {
             window.navigator.vibrate(ms);
